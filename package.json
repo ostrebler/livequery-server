@@ -1,0 +1,33 @@
+{
+  "name": "livequery-server",
+  "version": "1.0.0",
+  "description": "A lightweight and developer-friendly tool to be build robust live APIs (ie. with real-time updates)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ostrebler/livequery-server.git"
+  },
+  "keywords": [
+    "query",
+    "action",
+    "mutation",
+    "server",
+    "api",
+    "realtime",
+    "live",
+    "update",
+    "automatic",
+    "server",
+    "node",
+    "socket"
+  ],
+  "author": "ostrebler",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ostrebler/livequery-server/issues"
+  },
+  "homepage": "https://github.com/ostrebler/livequery-server#readme"
+}
