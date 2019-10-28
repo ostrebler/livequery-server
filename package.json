@@ -29,5 +29,10 @@
   "bugs": {
     "url": "https://github.com/ostrebler/livequery-server/issues"
   },
-  "homepage": "https://github.com/ostrebler/livequery-server#readme"
+  "homepage": "https://github.com/ostrebler/livequery-server#readme",
+  "dependencies": {
+    "deep-diff": "^1.0.2",
+    "lodash": "^4.17.15",
+    "socket.io": "^2.3.0"
+  }
 }
