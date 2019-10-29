@@ -1,5 +1,5 @@
 const lodash = require('lodash')
-const { diff } = require('deep-diff')
+const rfc6902 = require('rfc6902')
 
 function SubscriptionPool() {
   this.subscriptions = {}
@@ -22,7 +22,7 @@ SubscriptionPool.prototype.register = function(id, socket, query, input, context
 SubscriptionPool.prototype.unregister = function(id, socket) {
   // This is a safety check to ensure that one cannot cancel a subscription from
   // another client, even with the correct query id
-  if(this.subscriptions[id].socket === socket)
+  if(this.subscriptions[id] && this.subscriptions[id].socket === socket)
     delete this.subscriptions[id]
 }
 
@@ -37,17 +37,16 @@ SubscriptionPool.prototype.unregisterSocket = function(socket) {
 // This function applies a patch to the relevant queries and sends a delta to
 // the corresponding clients
 SubscriptionPool.prototype.patch = function(query, apply, assert) {
-  lodash.forOwn(this.subscriptions, subscription => {
+  lodash.forOwn(this.subscriptions, (subscription, id) => {
     if(
       subscription.query === query &&
       (!assert || assert(subscription.input, subscription.context))
     ) {
-      const before = lodash.cloneDeep(subscription.output)
-      const after = apply(subscription.output, subscription.input, subscription.context)
-      const delta = diff(before, after)
+      const update = apply(subscription.output, subscription.input, subscription.context)
+      const delta = rfc6902.createPatch(subscription.output, update)
       if(!lodash.isEmpty(delta)) {
-        subscription.output = after
-        subscription.socket.emit('patch', subscription.id, delta)
+        subscription.output = update
+        subscription.socket.emit('patch', id, delta)
       }
     }
   })
