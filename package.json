@@ -20,9 +20,9 @@
     "live",
     "update",
     "automatic",
-    "server",
     "node",
-    "socket"
+    "socket",
+    "request"
   ],
   "author": "ostrebler",
   "license": "MIT",

@@ -34,11 +34,6 @@ Server.prototype.handleConnect = function(socket) {
   socket.on('disconnect', this.handleDisconnect.bind(this, socket))
 }
 
-// When a client disconnects, remove all his subscriptions
-Server.prototype.handleDisconnect = function(socket) {
-  this.subscriptionPool.unregisterSocket(socket)
-}
-
 // When a client fires a query...
 Server.prototype.handleQuery = function(socket, query, input, context, callback) {
   this.config.verbose && log('New', query, 'query from client', socket.id)
@@ -80,6 +75,11 @@ Server.prototype.handleAction = function(socket, action, input, context, callbac
 Server.prototype.handlePatch = function(socket, action, query, apply, assert) {
   this.config.verbose && log('New patch on', query, 'triggered by', action, 'from client', socket.id)
   lodash.defer(this.subscriptionPool.patch.bind(this.subscriptionPool), query, apply, assert)
+}
+
+// When a client disconnects, remove all his subscriptions
+Server.prototype.handleDisconnect = function(socket) {
+  this.subscriptionPool.unregisterSocket(socket)
 }
 
 const log = args => console.log(
