@@ -3,6 +3,7 @@ const uuid = require('uuid/v4')
 const lodash = require('lodash')
 const SubscriptionPool = require('./subscriptionPool')
 
+// The main server class
 function Server(config) {
   this.config = {
     port: 8080,
@@ -27,7 +28,7 @@ function Server(config) {
 // This function handles new client connections and listens to new queries, query
 // cancellations, actions and disconnection
 Server.prototype.handleConnect = function(socket) {
-  this.config.verbose && log('New client <', socket.id, '>')
+  this.config.verbose && log(`New client <${socket.id}>`)
   socket.on('query', this.handleQuery.bind(this, socket))
   socket.on('unquery', this.handleUnquery.bind(this, socket))
   socket.on('action', this.handleAction.bind(this, socket))
@@ -36,7 +37,7 @@ Server.prototype.handleConnect = function(socket) {
 
 // When a client fires a query...
 Server.prototype.handleQuery = function(socket, query, input, context, callback) {
-  this.config.verbose && log('New query <', query, '> from client <', socket.id, '>')
+  this.config.verbose && log(`New query <${query}> from client <${socket.id}>`)
   // ...the complete context is calculated...
   context = {
     ...context,
@@ -49,7 +50,7 @@ Server.prototype.handleQuery = function(socket, query, input, context, callback)
   else {
     // ...a subscription is created with a unique id...
     const id = uuid()
-    this.config.verbose && log('New subscription <', id, '> for <', query, '> from client <', socket.id, '>')
+    this.config.verbose && log(`New subscription <${id}> for <${query}> from client <${socket.id}>`)
     this.subscriptionPool.register(id, socket, query, input, context, output)
     log('Active subs', lodash.keys(this.subscriptionPool.subscriptions))
     // ...and the output is returned to the client
@@ -59,13 +60,13 @@ Server.prototype.handleQuery = function(socket, query, input, context, callback)
 
 // When a client wants to cancel a subscription, just remove it from the pool
 Server.prototype.handleUnquery = function(socket, id) {
-  this.config.verbose && log('Unsubscription for <', id, '> from client <', socket.id, '>')
+  this.config.verbose && log(`Unsubscription for <${id}> from client <${socket.id}>`)
   this.subscriptionPool.unregister(id, socket)
 }
 
 // When a client fires an action...
 Server.prototype.handleAction = function(socket, action, input, context, callback) {
-  this.config.verbose && log('New action <', action, '> from client <', socket.id, '>')
+  this.config.verbose && log(`New action <${action}> from client <${socket.id}>`)
   // ...the complete context is calculated...
   context = {
     ...context,
@@ -80,13 +81,13 @@ Server.prototype.handleAction = function(socket, action, input, context, callbac
 
 // When a patch is triggered within an action, it is sent to the subscription pool
 Server.prototype.handlePatch = function(socket, action, query, apply, assert) {
-  this.config.verbose && log('New patch for <', query, '> triggered by <', action, '> from client <', socket.id, '>')
+  this.config.verbose && log(`New patch for <${query}> triggered by <${action}> from client <${socket.id}>`)
   lodash.defer(this.subscriptionPool.patch.bind(this.subscriptionPool), query, apply, assert)
 }
 
 // When a client disconnects, remove all his subscriptions
 Server.prototype.handleDisconnect = function(socket) {
-  this.config.verbose && log('Client <', socket.id, '> disconnected')
+  this.config.verbose && log(`Client <${socket.id}> disconnected`)
   this.subscriptionPool.unregisterSocket(socket)
 }
 

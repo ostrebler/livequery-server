@@ -46,7 +46,7 @@ SubscriptionPool.prototype.patch = function(query, apply, assert) {
       const delta = rfc6902.createPatch(subscription.output, update)
       if(!lodash.isEmpty(delta)) {
         subscription.output = update
-        subscription.socket.emit('patch', id, delta)
+        subscription.socket.emit(`patch/${id}`, delta)
       }
     }
   })
